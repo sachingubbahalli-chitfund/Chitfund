@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ChitFund Live · Gubbahalli</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyCneL3ddi3tdNbt0pDVWP2zOZHH4tEX7EU",
+  authDomain:"chitfund-gubbahalli.firebaseapp.com",
+  projectId:"chitfund-gubbahalli",
+  storageBucket:"chitfund-gubbahalli.firebasestorage.app",
+  messagingSenderId:"802350961068",
+  appId:"1:802350961068:web:1c08cc2196f5927d446a09"
+});
+const db=firebase.firestore();
+</script>
+<style>
+:root{--bg:#0d0f14;--surface:#161922;--surface2:#1e2330;--border:#252d40;--accent:#f0c040;--green:#4ecca3;--red:#e05c5c;--blue:#7ba7f7;--purple:#c084fc;--text:#e8eaf0;--muted:#6b7492}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden}
+#splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .4s}
+#splash.hide{opacity:0;pointer-events:none}
+.splash-logo{font-family:'Syne',sans-serif;font-size:40px;font-weight:800;color:var(--accent);letter-spacing:-2px}
+.splash-sub{color:var(--muted);font-size:12px;margin-top:6px;margin-bottom:28px;text-align:center;line-height:1.7}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:min(360px,92vw)}
+.login-box h2{font-family:'Syne',sans-serif;font-size:17px;margin-bottom:20px}
+.fi{margin-bottom:13px}
+.fi label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-family:'DM Mono',monospace;display:block;margin-bottom:5px}
+.inp{width:100%;padding:11px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;appearance:none}
+.inp:focus{border-color:var(--accent)}.inp option{background:var(--surface2)}
+.pin-wrap{position:relative}.pin-wrap .inp{padding-right:42px}
+.pin-eye{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:17px;padding:3px}
+.btn-login{width:100%;padding:13px;background:var(--accent);color:#0d0f14;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-login:disabled{opacity:.6}
+.login-hint{color:var(--muted);font-size:11px;text-align:center;margin-top:10px}
+#app{display:none;height:100%;flex-direction:column}
+#app.show{display:flex}
+.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hlogo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--accent)}
+.hright{display:flex;align-items:center;gap:8px}
+.rpill{padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:'DM Mono',monospace}
+.rpill.admin{background:rgba(240,192,64,.15);color:var(--accent);border:1px solid rgba(240,192,64,.3)}
+.rpill.viewer{background:rgba(78,204,163,.1);color:var(--green);border:1px solid rgba(78,204,163,.25)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.app-content{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px}
+.bottom-nav{background:var(--surface);border-top:1px solid var(--border);display:flex;flex-shrink:0}
+.bnav-btn{flex:1;padding:7px 2px 6px;background:none;border:none;color:var(--muted);font-size:9px;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.bnav-btn .icon{font-size:18px}
+.bnav-btn.active{color:var(--accent)}
+.panel{display:none;animation:fadeIn .2s ease}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:13px}
+.stat-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:4px}
+.stat-value{font-family:'Syne',sans-serif;font-size:18px;font-weight:700}
+.stat-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.cv-gold{color:var(--accent)}.cv-green{color:var(--green)}.cv-red{color:var(--red)}.cv-blue{color:var(--blue)}.cv-purple{color:var(--purple)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px;margin-bottom:9px}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px}
+.card-name{font-family:'Syne',sans-serif;font-weight:700;font-size:14px}
+.card-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
+.row span:last-child{color:var(--text);font-family:'DM Mono',monospace}
+.pbar{background:var(--border);border-radius:4px;height:4px;overflow:hidden;margin-top:7px}
+.pfill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--accent))}
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;font-family:'DM Mono',monospace}
+.bg{background:rgba(78,204,163,.12);color:var(--green);border:1px solid rgba(78,204,163,.25)}
+.br{background:rgba(224,92,92,.12);color:var(--red);border:1px solid rgba(224,92,92,.25)}
+.ba{background:rgba(240,192,64,.12);color:var(--accent);border:1px solid rgba(240,192,64,.25)}
+.bm{background:rgba(150,150,150,.1);color:var(--muted);border:1px solid rgba(150,150,150,.2)}
+.bp{background:rgba(192,132,252,.12);color:var(--purple);border:1px solid rgba(192,132,252,.25)}
+.btn{padding:8px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.btn:active{transform:scale(.96)}
+.btn-p{background:var(--accent);color:#0d0f14;font-weight:700}
+.btn-s{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-d{background:rgba(224,92,92,.12);color:var(--red);border:1px solid rgba(224,92,92,.25)}
+.btn-g{background:rgba(78,204,163,.12);color:var(--green);border:1px solid rgba(78,204,163,.25)}
+.btn-purple{background:rgba(192,132,252,.12);color:var(--purple);border:1px solid rgba(192,132,252,.25)}
+.btn-blue{background:rgba(123,167,247,.12);color:var(--blue);border:1px solid rgba(123,167,247,.25)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.sec-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:500;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:26px 22px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;animation:slideUp .22s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.modal-handle{width:34px;height:4px;background:var(--border);border-radius:2px;margin:-8px auto 18px}
+.modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:18px}
+.modal-actions{display:flex;gap:9px;margin-top:18px}
+.mfi{margin-bottom:13px}
+.mfi label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-family:'DM Mono',monospace;display:block;margin-bottom:5px}
+.emi-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px}
+.emi-table th{background:var(--surface2);color:var(--muted);padding:5px 7px;text-align:right;font-family:'DM Mono',monospace;font-size:9px;border-bottom:1px solid var(--border)}
+.emi-table th:first-child{text-align:left}
+.emi-table td{padding:5px 7px;border-bottom:1px solid var(--border);text-align:right;font-family:'DM Mono',monospace;color:var(--text);font-size:11px}
+.emi-table td:first-child{text-align:left;color:var(--muted)}
+.emi-table tr.paid td{color:var(--green);opacity:.75}
+.emi-table tr.overdue td{color:var(--red)}
+.emi-table tr.preclosed td{color:var(--purple);opacity:.8}
+.month-block{background:var(--surface);border:1px solid var(--border);border-radius:13px;margin-bottom:9px;overflow:hidden}
+.month-header{padding:12px 15px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.month-name{font-family:'Syne',sans-serif;font-weight:700;font-size:13px}
+.month-summary{font-size:10px;color:var(--muted);margin-top:2px}
+.month-body{padding:0 15px 13px;border-top:1px solid var(--border)}
+.mr{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+.mr:last-child{border-bottom:none}
+.mr-name{font-size:12px;font-weight:500}
+.exp-row{display:flex;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.exp-row:last-child{border-bottom:none}
+.pending-emi-card{background:rgba(224,92,92,.06);border:1px solid rgba(224,92,92,.2);border-radius:13px;padding:14px;margin-bottom:9px}
+.member-list-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;gap:11px;cursor:pointer}
+.big-stat{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:15px;padding:18px;margin-bottom:11px;text-align:center}
+.big-stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:7px}
+.big-stat-value{font-family:'Syne',sans-serif;font-size:26px;font-weight:800}
+.big-stat-sub{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5}
+.divider{height:1px;background:var(--border);margin:14px 0}
+.detail-section{margin-bottom:18px}
+.detail-section-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-family:'DM Mono',monospace;margin-bottom:9px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--surface2);border:1px solid var(--border);border-radius:18px;padding:9px 18px;font-size:13px;z-index:9999;transition:transform .3s ease;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(78,204,163,.4);color:var(--green)}
+.toast.error{border-color:rgba(224,92,92,.4);color:var(--red)}
+#loader{position:fixed;inset:0;background:rgba(13,15,20,.9);z-index:9998;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+#loader.show{display:flex}
+.ring{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="splash">
+  <div class="splash-logo">💰 ChitFund</div>
+  <div class="splash-sub">ಬಸವೇಶ್ವರ ಕೋ-ಆಪರೇಟಿವ್ ಸೊಸೈಟಿ<br>ಗುಬ್ಬಹಳ್ಳಿ · 14 Members</div>
+  <div class="login-box">
+    <h2>Sign In</h2>
+    <div class="fi"><label>Your Name</label>
+      <select id="loginUser" class="inp">
+        <option value="">— Select your name —</option>
+        <option value="Bharath">Bharath (Admin)</option>
+        <option value="Naveen GC">Naveen GC</option>
+        <option value="Vijay">Vijay</option>
+        <option value="Deepu GS">Deepu GS</option>
+        <option value="Satish GN">Satish GN</option>
+        <option value="Dinesh GC">Dinesh GC</option>
+        <option value="Sachin GS">Sachin GS</option>
+        <option value="Pradeep GJ">Pradeep GJ</option>
+        <option value="Thejesh GS">Thejesh GS</option>
+        <option value="Vinay GJ">Vinay GJ</option>
+        <option value="Vishwash GM">Vishwash GM</option>
+        <option value="Yogesh">Yogesh</option>
+        <option value="Rajashekhar">Rajashekhar</option>
+        <option value="Manju">Manju</option>
+      </select></div>
+    <div class="fi"><label>PIN</label>
+      <div class="pin-wrap">
+        <input type="password" id="loginPin" class="inp" placeholder="Enter PIN" inputmode="numeric" maxlength="6">
+        <button class="pin-eye" id="pinToggle">👁</button>
+      </div></div>
+    <button class="btn-login" id="loginBtn">Enter App →</button>
+    <div class="login-hint">Members PIN: 0000</div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="app-header">
+    <div class="hlogo">💰 ChitFund</div>
+    <div class="hright">
+      <div class="sync-dot" id="syncDot"></div>
+      <span id="hUser" style="font-size:11px;color:var(--muted)"></span>
+      <span id="hRole" class="rpill"></span>
+      <button class="btn btn-s btn-sm" id="logoutBtn">Out</button>
+    </div>
+  </div>
+  <div class="app-content">
+    <div id="tab-home" class="panel active"></div>
+    <div id="tab-members" class="panel"></div>
+    <div id="tab-collect" class="panel"></div>
+    <div id="tab-settings" class="panel"></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="bnav-btn active" id="nav-home"><span class="icon">🏠</span><span>Home</span></button>
+    <button class="bnav-btn" id="nav-members"><span class="icon">👥</span><span>Members</span></button>
+    <button class="bnav-btn" id="nav-collect"><span class="icon">📊</span><span>Collections</span></button>
+    <button class="bnav-btn" id="nav-settings"><span class="icon">⚙️</span><span>Settings</span></button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="detailModal"><div class="modal" id="detailModalContent"></div></div>
+
+<div class="modal-overlay" id="loanModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="loanModalTitle">Add / Edit Loan</div>
+    <div class="mfi"><label>Member</label><select id="lMember" class="inp"></select></div>
+    <div class="mfi"><label>Loan Type</label>
+      <select id="lType" class="inp">
+        <option value="regular">Regular Loan</option>
+        <option value="onemonth">One Month Loan</option>
+      </select></div>
+    <div id="regularFields">
+      <div class="mfi"><label>Tenure (months)</label>
+        <select id="lTenure" class="inp"></select>
+      </div>
+    </div>
+    <div class="mfi"><label>Loan Amount (₹)</label><input type="number" id="lAmount" class="inp"></div>
+    <div class="mfi"><label>Guarantor</label><input type="text" id="lGuarantor" class="inp"></div>
+    <div class="mfi"><label>Disbursement Date (DD.MM.YY)</label><input type="text" id="lDisbDate" class="inp" placeholder="e.g. 11.04.26"></div>
+    <div id="regularExtra">
+      <div class="mfi"><label>EMIs Already Paid</label><input type="number" id="lPaid" class="inp" value="0" min="0"></div>
+      <div class="mfi"><label>Status</label>
+        <select id="lStatus" class="inp">
+          <option value="active">Active</option>
+          <option value="preclosed">Pre-closed</option>
+          <option value="closed">Closed</option>
+        </select></div>
+      <div id="precloseFields" style="display:none">
+        <div class="mfi"><label>Pre-close Date (DD.MM.YY)</label><input type="text" id="lPrecloseDate" class="inp"></div>
+        <div class="mfi"><label>Pre-close Amount Paid (₹)</label><input type="number" id="lPrecloseAmt" class="inp"></div>
+        <div class="mfi"><label>Interest Waived (₹)</label><input type="number" id="lPrecloseWaived" class="inp" value="0"></div>
+      </div>
+      <div style="background:var(--surface2);border-radius:9px;padding:11px 13px;font-size:12px;color:var(--muted)">Monthly EMI: <strong id="emiCalc" style="color:var(--accent);font-family:'DM Mono',monospace;font-size:14px;margin-left:6px">—</strong></div>
+    </div>
+    <div id="oneMonthExtra" style="display:none">
+      <div class="mfi"><label>Interest Rate (%/month)</label><input type="number" id="lOMRate" class="inp" value="1" step="0.1"></div>
+      <div class="mfi"><label>Due Date (DD.MM.YY)</label><input type="text" id="lOMDue" class="inp"></div>
+      <div class="mfi"><label>Status</label>
+        <select id="lOMStatus" class="inp">
+          <option value="active">Active</option>
+          <option value="paid">Paid</option>
+        </select></div>
+      <div style="background:var(--surface2);border-radius:9px;padding:11px 13px;font-size:12px;color:var(--muted)">Interest due: <strong id="omInterestCalc" style="color:var(--accent);font-family:'DM Mono',monospace;font-size:14px;margin-left:6px">—</strong></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-p" style="flex:1" id="saveLoanBtn">Save</button>
+      <button class="btn btn-s" id="closeLoanBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="expModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="expModalTitle">Add Entry</div>
+    <div style="display:flex;gap:6px;margin-bottom:16px">
+      <button class="btn btn-p btn-sm" id="expTypeExpBtn" style="flex:1">💸 Expenditure</button>
+      <button class="btn btn-s btn-sm" id="expTypeIncBtn" style="flex:1">💰 Other Income</button>
+    </div>
+    <div class="mfi"><label>Date (DD.MM.YY)</label><input type="text" id="expDate" class="inp"></div>
+    <div class="mfi"><label>Description</label><input type="text" id="expDesc" class="inp"></div>
+    <div class="mfi"><label>Amount (₹)</label><input type="number" id="expAmt" class="inp" min="1"></div>
+    <div class="mfi" id="expCatWrap"><label>Category</label>
+      <select id="expCat" class="inp">
+        <option>Books &amp; Stationery</option><option>Register Fees</option><option>Stamp Paper</option>
+        <option>Bank Charges</option><option>Printing</option><option>Travel</option><option>Miscellaneous</option>
+      </select></div>
+    <div class="mfi" id="incCatWrap" style="display:none"><label>Income Source</label>
+      <select id="incCat" class="inp">
+        <option>Penalty / Fine</option><option>Late Fee</option><option>Donation</option>
+        <option>Interest on Savings</option><option>Other</option>
+      </select></div>
+    <div class="mfi"><label>Notes (optional)</label><input type="text" id="expNote" class="inp"></div>
+    <div class="modal-actions">
+      <button class="btn btn-p" style="flex:1" id="saveExpBtn">Save</button>
+      <button class="btn btn-s" id="closeExpBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="shareModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Edit Monthly Share Amounts</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px">Set contribution per member per month.</div>
+    <div id="shareEditList"></div>
+    <div class="modal-actions">
+      <button class="btn btn-p" style="flex:1" id="saveShareBtn">Save</button>
+      <button class="btn btn-s" id="closeShareBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="pinModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Change Admin PIN</div>
+    <div class="mfi"><label>Current PIN</label><div class="pin-wrap"><input type="password" id="pinOld" class="inp" inputmode="numeric" maxlength="6"><button class="pin-eye" id="pinOldEye">👁</button></div></div>
+    <div class="mfi"><label>New PIN</label><div cla
