@@ -5,19 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ChitFund Live · Gubbahalli</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script>
-firebase.initializeApp({
-  apiKey:"AIzaSyCneL3ddi3tdNbt0pDVWP2zOZHH4tEX7EU",
-  authDomain:"chitfund-gubbahalli.firebaseapp.com",
-  projectId:"chitfund-gubbahalli",
-  storageBucket:"chitfund-gubbahalli.firebasestorage.app",
-  messagingSenderId:"802350961068",
-  appId:"1:802350961068:web:1c08cc2196f5927d446a09"
-});
-const db=firebase.firestore();
-</script>
 <style>
 :root{--bg:#0d0f14;--surface:#161922;--surface2:#1e2330;--border:#252d40;--accent:#f0c040;--green:#4ecca3;--red:#e05c5c;--blue:#7ba7f7;--purple:#c084fc;--text:#e8eaf0;--muted:#6b7492}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -76,7 +63,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .bm{background:rgba(150,150,150,.1);color:var(--muted);border:1px solid rgba(150,150,150,.2)}
 .bp{background:rgba(192,132,252,.12);color:var(--purple);border:1px solid rgba(192,132,252,.25)}
 .btn{padding:8px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
-.btn:active{transform:scale(.96)}
+.btn:active{transform:scale(.96);opacity:.8}
 .btn-p{background:var(--accent);color:#0d0f14;font-weight:700}
 .btn-s{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
 .btn-d{background:rgba(224,92,92,.12);color:var(--red);border:1px solid rgba(224,92,92,.25)}
@@ -102,15 +89,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .emi-table td:first-child{text-align:left;color:var(--muted)}
 .emi-table tr.paid td{color:var(--green);opacity:.75}
 .emi-table tr.overdue td{color:var(--red)}
-.emi-table tr.preclosed td{color:var(--purple);opacity:.8}
 .month-block{background:var(--surface);border:1px solid var(--border);border-radius:13px;margin-bottom:9px;overflow:hidden}
 .month-header{padding:12px 15px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
 .month-name{font-family:'Syne',sans-serif;font-weight:700;font-size:13px}
-.month-summary{font-size:10px;color:var(--muted);margin-top:2px}
 .month-body{padding:0 15px 13px;border-top:1px solid var(--border)}
 .mr{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
 .mr:last-child{border-bottom:none}
-.mr-name{font-size:12px;font-weight:500}
 .exp-row{display:flex;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
 .exp-row:last-child{border-bottom:none}
 .pending-emi-card{background:rgba(224,92,92,.06);border:1px solid rgba(224,92,92,.2);border-radius:13px;padding:14px;margin-bottom:9px}
@@ -118,7 +102,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .big-stat{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:15px;padding:18px;margin-bottom:11px;text-align:center}
 .big-stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:7px}
 .big-stat-value{font-family:'Syne',sans-serif;font-size:26px;font-weight:800}
-.big-stat-sub{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5}
 .divider{height:1px;background:var(--border);margin:14px 0}
 .detail-section{margin-bottom:18px}
 .detail-section-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-family:'DM Mono',monospace;margin-bottom:9px;padding-bottom:5px;border-bottom:1px solid var(--border)}
@@ -191,49 +174,30 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 </div>
 
 <div class="modal-overlay" id="detailModal"><div class="modal" id="detailModalContent"></div></div>
-
 <div class="modal-overlay" id="loanModal">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="loanModalTitle">Add / Edit Loan</div>
     <div class="mfi"><label>Member</label><select id="lMember" class="inp"></select></div>
-    <div class="mfi"><label>Loan Type</label>
-      <select id="lType" class="inp">
-        <option value="regular">Regular Loan</option>
-        <option value="onemonth">One Month Loan</option>
-      </select></div>
-    <div id="regularFields">
-      <div class="mfi"><label>Tenure (months)</label>
-        <select id="lTenure" class="inp"></select>
-      </div>
-    </div>
+    <div class="mfi"><label>Loan Type</label><select id="lType" class="inp"><option value="regular">Regular Loan</option><option value="onemonth">One Month Loan</option></select></div>
+    <div id="regularFields"><div class="mfi"><label>Tenure (months)</label><select id="lTenure" class="inp"></select></div></div>
     <div class="mfi"><label>Loan Amount (₹)</label><input type="number" id="lAmount" class="inp"></div>
     <div class="mfi"><label>Guarantor</label><input type="text" id="lGuarantor" class="inp"></div>
-    <div class="mfi"><label>Disbursement Date (DD.MM.YY)</label><input type="text" id="lDisbDate" class="inp" placeholder="e.g. 11.04.26"></div>
+    <div class="mfi"><label>Disbursement Date</label><input type="text" id="lDisbDate" class="inp" placeholder="DD.MM.YY"></div>
     <div id="regularExtra">
       <div class="mfi"><label>EMIs Already Paid</label><input type="number" id="lPaid" class="inp" value="0" min="0"></div>
-      <div class="mfi"><label>Status</label>
-        <select id="lStatus" class="inp">
-          <option value="active">Active</option>
-          <option value="preclosed">Pre-closed</option>
-          <option value="closed">Closed</option>
-        </select></div>
+      <div class="mfi"><label>Status</label><select id="lStatus" class="inp"><option value="active">Active</option><option value="preclosed">Pre-closed</option><option value="closed">Closed</option></select></div>
       <div id="precloseFields" style="display:none">
-        <div class="mfi"><label>Pre-close Date (DD.MM.YY)</label><input type="text" id="lPrecloseDate" class="inp"></div>
+        <div class="mfi"><label>Pre-close Date</label><input type="text" id="lPrecloseDate" class="inp" placeholder="DD.MM.YY"></div>
         <div class="mfi"><label>Pre-close Amount Paid (₹)</label><input type="number" id="lPrecloseAmt" class="inp"></div>
         <div class="mfi"><label>Interest Waived (₹)</label><input type="number" id="lPrecloseWaived" class="inp" value="0"></div>
       </div>
-      <div style="background:var(--surface2);border-radius:9px;padding:11px 13px;font-size:12px;color:var(--muted)">Monthly EMI: <strong id="emiCalc" style="color:var(--accent);font-family:'DM Mono',monospace;font-size:14px;margin-left:6px">—</strong></div>
+      <div style="background:var(--surface2);border-radius:9px;padding:11px 13px;font-size:12px;color:var(--muted)">EMI: <strong id="emiCalc" style="color:var(--accent);font-family:'DM Mono',monospace;font-size:14px;margin-left:6px">—</strong></div>
     </div>
     <div id="oneMonthExtra" style="display:none">
       <div class="mfi"><label>Interest Rate (%/month)</label><input type="number" id="lOMRate" class="inp" value="1" step="0.1"></div>
-      <div class="mfi"><label>Due Date (DD.MM.YY)</label><input type="text" id="lOMDue" class="inp"></div>
-      <div class="mfi"><label>Status</label>
-        <select id="lOMStatus" class="inp">
-          <option value="active">Active</option>
-          <option value="paid">Paid</option>
-        </select></div>
-      <div style="background:var(--surface2);border-radius:9px;padding:11px 13px;font-size:12px;color:var(--muted)">Interest due: <strong id="omInterestCalc" style="color:var(--accent);font-family:'DM Mono',monospace;font-size:14px;margin-left:6px">—</strong></div>
+      <div class="mfi"><label>Due Date</label><input type="text" id="lOMDue" class="inp" placeholder="DD.MM.YY"></div>
+      <div class="mfi"><label>Status</label><select id="lOMStatus" class="inp"><option value="active">Active</option><option value="paid">Paid</option></select></div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-p" style="flex:1" id="saveLoanBtn">Save</button>
@@ -241,7 +205,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
     </div>
   </div>
 </div>
-
 <div class="modal-overlay" id="expModal">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -253,16 +216,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
     <div class="mfi"><label>Date (DD.MM.YY)</label><input type="text" id="expDate" class="inp"></div>
     <div class="mfi"><label>Description</label><input type="text" id="expDesc" class="inp"></div>
     <div class="mfi"><label>Amount (₹)</label><input type="number" id="expAmt" class="inp" min="1"></div>
-    <div class="mfi" id="expCatWrap"><label>Category</label>
-      <select id="expCat" class="inp">
-        <option>Books &amp; Stationery</option><option>Register Fees</option><option>Stamp Paper</option>
-        <option>Bank Charges</option><option>Printing</option><option>Travel</option><option>Miscellaneous</option>
-      </select></div>
-    <div class="mfi" id="incCatWrap" style="display:none"><label>Income Source</label>
-      <select id="incCat" class="inp">
-        <option>Penalty / Fine</option><option>Late Fee</option><option>Donation</option>
-        <option>Interest on Savings</option><option>Other</option>
-      </select></div>
+    <div class="mfi" id="expCatWrap"><label>Category</label><select id="expCat" class="inp"><option>Books &amp; Stationery</option><option>Register Fees</option><option>Stamp Paper</option><option>Bank Charges</option><option>Printing</option><option>Travel</option><option>Miscellaneous</option></select></div>
+    <div class="mfi" id="incCatWrap" style="display:none"><label>Income Source</label><select id="incCat" class="inp"><option>Penalty / Fine</option><option>Late Fee</option><option>Donation</option><option>Interest on Savings</option><option>Other</option></select></div>
     <div class="mfi"><label>Notes (optional)</label><input type="text" id="expNote" class="inp"></div>
     <div class="modal-actions">
       <button class="btn btn-p" style="flex:1" id="saveExpBtn">Save</button>
@@ -270,12 +225,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
     </div>
   </div>
 </div>
-
 <div class="modal-overlay" id="shareModal">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">Edit Monthly Share Amounts</div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:14px">Set contribution per member per month.</div>
     <div id="shareEditList"></div>
     <div class="modal-actions">
       <button class="btn btn-p" style="flex:1" id="saveShareBtn">Save</button>
@@ -283,10 +236,568 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
     </div>
   </div>
 </div>
-
 <div class="modal-overlay" id="pinModal">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">Change Admin PIN</div>
     <div class="mfi"><label>Current PIN</label><div class="pin-wrap"><input type="password" id="pinOld" class="inp" inputmode="numeric" maxlength="6"><button class="pin-eye" id="pinOldEye">👁</button></div></div>
-    <div class="mfi"><label>New PIN</label><div cla
+    <div class="mfi"><label>New PIN</label><div class="pin-wrap"><input type="password" id="pinNew" class="inp" inputmode="numeric" maxlength="6"><button class="pin-eye" id="pinNewEye">👁</button></div></div>
+    <div class="mfi"><label>Confirm PIN</label><div class="pin-wrap"><input type="password" id="pinConf" class="inp" inputmode="numeric" maxlength="6"><button class="pin-eye" id="pinConfEye">👁</button></div></div>
+    <div class="modal-actions">
+      <button class="btn btn-p" style="flex:1" id="savePinBtn">Update</button>
+      <button class="btn btn-s" id="closePinBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+<div id="loader"><div class="ring"></div><div style="color:var(--muted);font-size:13px" id="loaderMsg">Connecting…</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════ FIREBASE REST API CONFIG ══════
+const FB_PROJECT='chitfund-gubbahalli';
+const FB_KEY='AIzaSyCneL3ddi3tdNbt0pDVWP2zOZHH4tEX7EU';
+const FB_URL=`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents`;
+
+// Firestore REST helpers
+async function fsGet(collection,docId){
+  const r=await fetch(`${FB_URL}/${collection}/${docId}?key=${FB_KEY}`);
+  if(!r.ok)return null;
+  const d=await r.json();
+  return fsParseDoc(d);
+}
+async function fsList(collection){
+  const r=await fetch(`${FB_URL}/${collection}?key=${FB_KEY}`);
+  if(!r.ok)return[];
+  const d=await r.json();
+  return(d.documents||[]).map(fsParseDoc);
+}
+async function fsSet(collection,docId,data){
+  const body=fsEncodeDoc(data);
+  const r=await fetch(`${FB_URL}/${collection}/${docId}?key=${FB_KEY}`,{
+    method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+  });
+  return r.ok;
+}
+async function fsAdd(collection,data){
+  const body=fsEncodeDoc(data);
+  const r=await fetch(`${FB_URL}/${collection}?key=${FB_KEY}`,{
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+  });
+  return r.ok;
+}
+async function fsDelete(collection,docId){
+  const r=await fetch(`${FB_URL}/${collection}/${docId}?key=${FB_KEY}`,{method:'DELETE'});
+  return r.ok;
+}
+function fsParseDoc(doc){
+  if(!doc||!doc.fields)return null;
+  const obj={};
+  const name=doc.name||'';
+  obj._id=name.split('/').pop();
+  for(const[k,v]of Object.entries(doc.fields)){obj[k]=fsParseVal(v);}
+  return obj;
+}
+function fsParseVal(v){
+  if(v.stringValue!==undefined)return v.stringValue;
+  if(v.integerValue!==undefined)return parseInt(v.integerValue);
+  if(v.doubleValue!==undefined)return parseFloat(v.doubleValue);
+  if(v.booleanValue!==undefined)return v.booleanValue;
+  if(v.nullValue!==undefined)return null;
+  if(v.arrayValue)return(v.arrayValue.values||[]).map(fsParseVal);
+  if(v.mapValue)return Object.fromEntries(Object.entries(v.mapValue.fields||{}).map(([k,val])=>[k,fsParseVal(val)]));
+  return null;
+}
+function fsEncodeDoc(data){
+  const fields={};
+  for(const[k,v]of Object.entries(data)){
+    if(k==='_id')continue;
+    fields[k]=fsEncodeVal(v);
+  }
+  return{fields};
+}
+function fsEncodeVal(v){
+  if(v===null||v===undefined)return{nullValue:null};
+  if(typeof v==='boolean')return{booleanValue:v};
+  if(typeof v==='number')return Number.isInteger(v)?{integerValue:v}:{doubleValue:v};
+  if(typeof v==='string')return{stringValue:v};
+  if(Array.isArray(v))return{arrayValue:{values:v.map(fsEncodeVal)}};
+  if(typeof v==='object')return{mapValue:{fields:Object.fromEntries(Object.entries(v).map(([k,val])=>[k,fsEncodeVal(val)]))}};
+  return{stringValue:String(v)};
+}
+
+// ══════ CONSTANTS ══════
+const ALL_MEMBERS=['Bharath','Naveen GC','Vijay','Deepu GS','Satish GN','Dinesh GC','Sachin GS','Pradeep GJ','Thejesh GS','Vinay GJ','Vishwash GM','Yogesh','Rajashekhar','Manju'];
+const ADMIN='Bharath',MEMBER_PIN='0000',CONTRIB_START='2025-03',SETTLED_UPTO='2026-03',MEMBERS_COUNT=14;
+
+const SEED_LOANS=[
+  {id:'l1',member:"Naveen GC",guarantor:"RAJ GL",amount:46272,tenure:12,disbDate:"",paidEMI:11,type:'regular',status:'active',schedule:[{date:"10.05.25",principal:3648,interest:463,emi:4111,balance:42623},{date:"10.06.25",principal:3685,interest:426,emi:4111,balance:38938},{date:"10.07.25",principal:3722,interest:389,emi:4111,balance:35216},{date:"10.08.25",principal:3759,interest:352,emi:4111,balance:31457},{date:"10.09.25",principal:3796,interest:315,emi:4111,balance:27660},{date:"10.10.25",principal:3834,interest:277,emi:4111,balance:23825},{date:"10.11.25",principal:3873,interest:238,emi:4111,balance:19952},{date:"10.12.25",principal:3911,interest:200,emi:4111,balance:16040},{date:"10.01.26",principal:3951,interest:160,emi:4111,balance:12089},{date:"10.02.26",principal:3990,interest:121,emi:4111,balance:8098},{date:"10.03.26",principal:4030,interest:81,emi:4111,balance:4067},{date:"10.04.26",principal:4070,interest:41,emi:4113,balance:0}]},
+  {id:'l2',member:"Sachin GS",guarantor:"DEEPU GS",amount:135613,tenure:24,disbDate:"11.12.25",paidEMI:3,type:'regular',status:'active',schedule:[{date:"10.01.26",principal:5028,interest:1356,emi:6384,balance:130585},{date:"10.02.26",principal:5078,interest:1306,emi:6384,balance:125506},{date:"10.03.26",principal:5129,interest:1255,emi:6384,balance:120377},{date:"10.04.26",principal:5180,interest:1204,emi:6384,balance:115196},{date:"10.05.26",principal:5232,interest:1152,emi:6384,balance:109963},{date:"10.06.26",principal:5284,interest:1100,emi:6384,balance:104678},{date:"10.07.26",principal:5337,interest:1047,emi:6384,balance:99340},{date:"10.08.26",principal:5391,interest:993,emi:6384,balance:93949},{date:"10.09.26",principal:5445,interest:939,emi:6384,balance:88504},{date:"10.10.26",principal:5499,interest:885,emi:6384,balance:83005},{date:"10.11.26",principal:5554,interest:830,emi:6384,balance:77451},{date:"10.12.26",principal:5609,interest:775,emi:6384,balance:71841},{date:"10.01.27",principal:5666,interest:718,emi:6384,balance:66175},{date:"10.02.27",principal:5722,interest:662,emi:6384,balance:60452},{date:"10.03.27",principal:5779,interest:605,emi:6384,balance:54672},{date:"10.04.27",principal:5837,interest:547,emi:6384,balance:48834},{date:"10.05.27",principal:5896,interest:488,emi:6384,balance:42938},{date:"10.06.27",principal:5955,interest:429,emi:6384,balance:36983},{date:"10.07.27",principal:6014,interest:370,emi:6384,balance:30968},{date:"10.08.27",principal:6074,interest:310,emi:6384,balance:24893},{date:"10.09.27",principal:6135,interest:249,emi:6384,balance:18757},{date:"10.10.27",principal:6196,interest:188,emi:6384,balance:12560},{date:"10.11.27",principal:6258,interest:126,emi:6384,balance:6301},{date:"10.12.27",principal:6321,interest:63,emi:6384,balance:0}]},
+  {id:'l3',member:"Thejesh GS",guarantor:"PRADEEP GJ",amount:153778,tenure:12,disbDate:"11.02.26",paidEMI:1,type:'regular',status:'active',schedule:[{date:"10.03.26",principal:12125,interest:1538,emi:13663,balance:141652},{date:"10.04.26",principal:12246,interest:1417,emi:13663,balance:129405},{date:"10.05.26",principal:12369,interest:1294,emi:13663,balance:117036},{date:"10.06.26",principal:12493,interest:1170,emi:13663,balance:104543},{date:"10.07.26",principal:12618,interest:1045,emi:13663,balance:91925},{date:"10.08.26",principal:12744,interest:919,emi:13663,balance:79181},{date:"10.09.26",principal:12871,interest:792,emi:13663,balance:66309},{date:"10.10.26",principal:13000,interest:663,emi:13663,balance:53309},{date:"10.11.26",principal:13130,interest:533,emi:13663,balance:40179},{date:"10.12.26",principal:13261,interest:402,emi:13663,balance:26917},{date:"10.01.27",principal:13394,interest:269,emi:13663,balance:13523},{date:"10.02.27",principal:13528,interest:135,emi:13663,balance:0}]},
+  {id:'l4',member:"Vinay GJ",guarantor:"DEEPU GS",amount:107524,tenure:12,disbDate:"11.03.26",paidEMI:0,type:'regular',status:'active',schedule:[{date:"10.04.26",principal:8478,interest:1075,emi:9553,balance:99046},{date:"10.05.26",principal:8563,interest:990,emi:9553,balance:90483},{date:"10.06.26",principal:8648,interest:905,emi:9553,balance:81834},{date:"10.07.26",principal:8735,interest:818,emi:9553,balance:73099},{date:"10.08.26",principal:8822,interest:731,emi:9553,balance:64276},{date:"10.09.26",principal:8910,interest:643,emi:9553,balance:55365},{date:"10.10.26",principal:8999,interest:554,emi:9553,balance:46365},{date:"10.11.26",principal:9089,interest:464,emi:9553,balance:37275},{date:"10.12.26",principal:9180,interest:373,emi:9553,balance:28094},{date:"10.01.27",principal:9272,interest:281,emi:9553,balance:18821},{date:"10.02.27",principal:9365,interest:188,emi:9553,balance:9456},{date:"10.03.27",principal:9458,interest:95,emi:9553,balance:0}]},
+  {id:'l5',member:"Dinesh GC",guarantor:"BHARATH GS",amount:79289,tenure:18,disbDate:"11.11.25",paidEMI:4,type:'regular',status:'active',schedule:[{date:"10.12.25",principal:4042,interest:793,emi:4835,balance:75246},{date:"10.01.26",principal:4083,interest:752,emi:4835,balance:71163},{date:"10.02.26",principal:4123,interest:712,emi:4835,balance:67039},{date:"10.03.26",principal:4165,interest:670,emi:4835,balance:62874},{date:"10.04.26",principal:4206,interest:629,emi:4835,balance:58667},{date:"10.05.26",principal:4248,interest:587,emi:4835,balance:54418},{date:"10.06.26",principal:4291,interest:544,emi:4835,balance:50127},{date:"10.07.26",principal:4334,interest:501,emi:4835,balance:45793},{date:"10.08.26",principal:4377,interest:458,emi:4835,balance:41415},{date:"10.09.26",principal:4421,interest:414,emi:4835,balance:36994},{date:"10.10.26",principal:4465,interest:370,emi:4835,balance:32528},{date:"10.11.26",principal:4510,interest:325,emi:4835,balance:28018},{date:"10.12.26",principal:4555,interest:280,emi:4835,balance:23463},{date:"10.01.27",principal:4600,interest:235,emi:4835,balance:18862},{date:"10.02.27",principal:4646,interest:189,emi:4835,balance:14215},{date:"10.03.27",principal:4693,interest:142,emi:4835,balance:9522},{date:"10.04.27",principal:4740,interest:95,emi:4835,balance:4782},{date:"10.05.27",principal:4787,interest:48,emi:4835,balance:0}]},
+  {id:'l6',member:"Pradeep GJ",guarantor:"THEJESH GS",amount:200000,tenure:12,disbDate:"11.01.26",paidEMI:2,type:'regular',status:'active',schedule:[{date:"10.02.26",principal:15770,interest:2000,emi:17770,balance:184230},{date:"10.03.26",principal:15928,interest:1842,emi:17770,balance:168302},{date:"10.04.26",principal:16087,interest:1683,emi:17770,balance:152215},{date:"10.05.26",principal:16248,interest:1522,emi:17770,balance:135967},{date:"10.06.26",principal:16410,interest:1360,emi:17770,balance:119556},{date:"10.07.26",principal:16574,interest:1196,emi:17770,balance:102981},{date:"10.08.26",principal:16740,interest:1030,emi:17770,balance:86240},{date:"10.09.26",principal:16908,interest:862,emi:17770,balance:69332},{date:"10.10.26",principal:17077,interest:693,emi:17770,balance:52255},{date:"10.11.26",principal:17247,interest:523,emi:17770,balance:35007},{date:"10.12.26",principal:17420,interest:350,emi:17770,balance:17587},{date:"10.01.27",principal:17594,interest:176,emi:17770,balance:0}]},
+  {id:'l7',member:"Deepu GS",guarantor:"RAJ GL",amount:100000,tenure:18,disbDate:"",paidEMI:6,type:'regular',status:'active',schedule:[{date:"10.10.25",principal:5098,interest:1000,emi:6098,balance:94902},{date:"10.11.25",principal:5149,interest:949,emi:6098,balance:89753},{date:"10.12.25",principal:5200,interest:898,emi:6098,balance:84552},{date:"10.01.26",principal:5252,interest:846,emi:6098,balance:79299},{date:"10.02.26",principal:5305,interest:793,emi:6098,balance:73993},{date:"10.03.26",principal:5358,interest:740,emi:6098,balance:68634},{date:"10.04.26",principal:5412,interest:686,emi:6098,balance:63222},{date:"10.05.26",principal:5466,interest:632,emi:6098,balance:57756},{date:"10.06.26",principal:5520,interest:578,emi:6098,balance:52235},{date:"10.07.26",principal:5576,interest:522,emi:6098,balance:46659},{date:"10.08.26",principal:5631,interest:467,emi:6098,balance:41027},{date:"10.09.26",principal:5688,interest:410,emi:6098,balance:35339},{date:"10.10.26",principal:5745,interest:353,emi:6098,balance:29594},{date:"10.11.26",principal:5802,interest:296,emi:6098,balance:23791},{date:"10.12.26",principal:5860,interest:238,emi:6098,balance:17930},{date:"10.01.27",principal:5919,interest:179,emi:6098,balance:12011},{date:"10.02.27",principal:5978,interest:120,emi:6098,balance:6033},{date:"10.03.27",principal:6038,interest:60,emi:6098,balance:0}]},
+  {id:'l8',member:"Satish GN",guarantor:"THEJESH GS",amount:100706,tenure:12,disbDate:"11.10.25",paidEMI:5,type:'regular',status:'active',schedule:[{date:"10.11.25",principal:7941,interest:1007,emi:8948,balance:92765},{date:"10.12.25",principal:8020,interest:928,emi:8948,balance:84744},{date:"10.01.26",principal:8101,interest:847,emi:8948,balance:76643},{date:"10.02.26",principal:8182,interest:766,emi:8948,balance:68461},{date:"10.03.26",principal:8263,interest:685,emi:8948,balance:60197},{date:"10.04.26",principal:8346,interest:602,emi:8948,balance:51850},{date:"10.05.26",principal:8430,interest:518,emi:8948,balance:43420},{date:"10.06.26",principal:8514,interest:434,emi:8948,balance:34906},{date:"10.07.26",principal:8599,interest:349,emi:8948,balance:26307},{date:"10.08.26",principal:8685,interest:263,emi:8948,balance:17622},{date:"10.09.26",principal:8772,interest:176,emi:8948,balance:8850},{date:"10.10.26",principal:8860,interest:88,emi:8948,balance:0}]},
+  {id:'l9',member:"Vishwash GM",guarantor:"DEEPU GS",amount:62074,tenure:12,disbDate:"",paidEMI:8,type:'regular',status:'active',schedule:[{date:"10.08.25",principal:4894,interest:621,emi:5515,balance:57179},{date:"10.09.25",principal:4943,interest:572,emi:5515,balance:52235},{date:"10.10.25",principal:4993,interest:522,emi:5515,balance:47242},{date:"10.11.25",principal:5043,interest:472,emi:5515,balance:42199},{date:"10.12.25",principal:5093,interest:422,emi:5515,balance:37105},{date:"10.01.26",principal:5144,interest:371,emi:5515,balance:31961},{date:"10.02.26",principal:5195,interest:320,emi:5515,balance:26765},{date:"10.03.26",principal:5247,interest:268,emi:5515,balance:21517},{date:"10.04.26",principal:5300,interest:215,emi:5515,balance:16217},{date:"10.05.26",principal:5353,interest:162,emi:5515,balance:10864},{date:"10.06.26",principal:5406,interest:109,emi:5515,balance:5457},{date:"10.07.26",principal:5460,interest:55,emi:5517,balance:0}]},
+];
+
+// ══════ STATE ══════
+let cachedLoans=[],cachedExpenses=[],currentUser=null,isAdmin=false;
+let currentTab='home',expandedMonths=new Set(),editingLoanId=null,adminPin='1234';
+let monthlyShares={},maxLoanAmount=300000,expEntryType='expense';
+let syncInterval=null;
+
+const SPECIAL={'2026-01':15000};
+const getShare=m=>monthlyShares[m]!==undefined?monthlyShares[m]:(SPECIAL[m]||3000);
+
+// ══════ UTILS ══════
+const fmt=n=>'₹'+Number(Math.round(n)).toLocaleString('en-IN');
+const calcEMI=(p,m)=>{const r=0.12/12;return Math.round(p*r*Math.pow(1+r,m)/(Math.pow(1+r,m)-1))};
+const avatarColor=name=>{const c=['#f0c040','#4ecca3','#7ba7f7','#e05c5c','#c084fc','#fb923c','#34d399','#60a5fa'];let h=0;for(let ch of name)h=(h<<5)-h+ch.charCodeAt(0);return c[Math.abs(h)%c.length]};
+const initials=name=>name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const rowMonth=d=>{const[,m,y]=d.split('.');return`20${y}-${m}`};
+function genMonths(from,to){const r=[];let[y,m]=from.split('-').map(Number);const[ty,tm]=to.split('-').map(Number);while(y<ty||(y===ty&&m<=tm)){r.push(`${y}-${String(m).padStart(2,'0')}`);m++;if(m>12){m=1;y++;}}return r;}
+const settled=m=>m<=SETTLED_UPTO;
+const mName=month=>{const[y,m]=month.split('-').map(Number);return['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m]+' '+y};
+function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=(type==='success'?'✓ ':'⚠ ')+msg;t.className='toast show '+type;setTimeout(()=>t.classList.remove('show'),2800)}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function loader(show,msg='Connecting…'){const l=document.getElementById('loader');l.className=show?'show':'';if(msg)document.getElementById('loaderMsg').textContent=msg;}
+function getLoanOutstanding(l){
+  if(l.type==='onemonth'){if(l.status==='paid')return{principal:0,interest:0,total:0};const i=Math.round(l.amount*(l.omRate||1)/100);return{principal:l.amount,interest:i,total:l.amount+i};}
+  if(l.status==='preclosed'||l.status==='closed')return{principal:0,interest:0,total:0};
+  if(!l.schedule||!l.schedule.length)return{principal:l.amount,interest:0,total:l.amount};
+  const rem=l.schedule.slice(l.paidEMI);
+  const rp=rem.reduce((a,r)=>a+r.principal,0),ri=rem.reduce((a,r)=>a+r.interest,0);
+  return{principal:rp,interest:ri,total:rp+ri};
+}
+
+// ══════ DATA LOADING ══════
+async function loadAll(){
+  try{
+    const[loans,expenses,cfg]=await Promise.all([fsList('loans'),fsList('expenses'),fsGet('settings','config')]);
+    // Merge with seed schedules
+    cachedLoans=(loans&&loans.length>0?loans:[]).map(l=>{
+      const seed=SEED_LOANS.find(s=>s.id===l.id);
+      if(seed&&(!l.schedule||!l.schedule.length))return{...seed,...l,schedule:seed.schedule};
+      return l;
+    });
+    if(!cachedLoans.length){
+      // Seed loans
+      await Promise.all(SEED_LOANS.map(l=>fsSet('loans',l.id,l)));
+      cachedLoans=[...SEED_LOANS];
+    }
+    cachedExpenses=expenses||[];
+    if(cfg){adminPin=cfg.adminPin||'1234';maxLoanAmount=cfg.maxLoanAmount||300000;monthlyShares=cfg.monthlyShares||{};}
+    else{await fsSet('settings','config',{adminPin:'1234',maxLoanAmount:300000,monthlyShares:{}});}
+  }catch(e){console.error(e);showToast('Load error: '+e.message,'error');}
+}
+
+async function saveConfig(){
+  await fsSet('settings','config',{adminPin,maxLoanAmount,monthlyShares});
+}
+
+// Auto sync every 15 seconds
+function startSync(){
+  syncInterval=setInterval(async()=>{
+    try{
+      const[loans,expenses,cfg]=await Promise.all([fsList('loans'),fsList('expenses'),fsGet('settings','config')]);
+      cachedLoans=(loans||[]).map(l=>{const seed=SEED_LOANS.find(s=>s.id===l.id);if(seed&&(!l.schedule||!l.schedule.length))return{...seed,...l,schedule:seed.schedule};return l;});
+      cachedExpenses=expenses||[];
+      if(cfg){adminPin=cfg.adminPin||adminPin;maxLoanAmount=cfg.maxLoanAmount||maxLoanAmount;monthlyShares=cfg.monthlyShares||monthlyShares;}
+      document.getElementById('syncDot').className='sync-dot';
+      renderCurrentTab();
+    }catch(e){document.getElementById('syncDot').className='sync-dot error';}
+  },15000);
+}
+
+// ══════ AUTH ══════
+document.getElementById('loginBtn').addEventListener('click',async function(){
+  const u=document.getElementById('loginUser').value,p=document.getElementById('loginPin').value;
+  if(!u){showToast('Select your name','error');return}
+  this.disabled=true;this.textContent='Connecting…';
+  loader(true);
+  try{
+    await loadAll();
+    const correct=u===ADMIN?adminPin:MEMBER_PIN;
+    if(p!==correct){loader(false);this.disabled=false;this.textContent='Enter App →';showToast('Wrong PIN','error');return}
+    currentUser=u;isAdmin=(u===ADMIN);
+    document.getElementById('hUser').textContent=u;
+    const rEl=document.getElementById('hRole');rEl.textContent=isAdmin?'ADMIN':'VIEW';rEl.className='rpill '+(isAdmin?'admin':'viewer');
+    document.getElementById('splash').classList.add('hide');
+    setTimeout(()=>document.getElementById('splash').style.display='none',400);
+    document.getElementById('app').classList.add('show');
+    startSync();
+    renderCurrentTab();
+  }catch(e){showToast('Failed: '+e.message,'error');}
+  finally{loader(false);this.disabled=false;this.textContent='Enter App →';}
+});
+
+document.getElementById('loginPin').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginBtn').click()});
+document.getElementById('pinToggle').addEventListener('click',function(){const i=document.getElementById('loginPin'),s=i.type==='password';i.type=s?'text':'password';this.textContent=s?'🙈':'👁'});
+['pinOldEye','pinNewEye','pinConfEye'].forEach(id=>{const m={'pinOldEye':'pinOld','pinNewEye':'pinNew','pinConfEye':'pinConf'};document.getElementById(id).addEventListener('click',function(){const i=document.getElementById(m[id]),s=i.type==='password';i.type=s?'text':'password';this.textContent=s?'🙈':'👁'});});
+document.getElementById('logoutBtn').addEventListener('click',()=>{
+  if(syncInterval)clearInterval(syncInterval);
+  currentUser=null;isAdmin=false;
+  document.getElementById('app').classList.remove('show');
+  const s=document.getElementById('splash');s.style.display='flex';s.classList.remove('hide');
+  document.getElementById('loginPin').value='';
+});
+
+// ══════ TABS ══════
+['home','members','collect','settings'].forEach(tab=>{
+  document.getElementById('nav-'+tab).addEventListener('click',function(){
+    currentTab=tab;
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab-'+tab).classList.add('active');
+    this.classList.add('active');renderCurrentTab();
+  });
+});
+function renderCurrentTab(){
+  if(!currentUser)return;
+  if(currentTab==='home')renderHome();
+  else if(currentTab==='members')renderMembers();
+  else if(currentTab==='collect')renderCollections();
+  else if(currentTab==='settings')renderSettings();
+}
+
+// ══════ HOME ══════
+function renderHome(){
+  let pendingEMIs=[],totalOutP=0,totalOutI=0,totalDisbursed=0,totalIntRecd=0;
+  cachedLoans.forEach(l=>{
+    totalDisbursed+=l.amount;
+    const ob=getLoanOutstanding(l);totalOutP+=ob.principal;totalOutI+=ob.interest;
+    if(l.schedule)l.schedule.slice(0,l.paidEMI).forEach(r=>totalIntRecd+=r.interest);
+    if(l.type==='regular'&&l.status==='active'&&l.schedule)l.schedule.forEach((row,idx)=>{if(rowMonth(row.date)<=SETTLED_UPTO&&idx>=l.paidEMI)pendingEMIs.push({member:l.member,row,idx,loanId:l.id});});
+    if(l.type==='onemonth'&&l.status==='active'&&l.omDue&&rowMonth(l.omDue)<=SETTLED_UPTO){const i=Math.round(l.amount*(l.omRate||1)/100);pendingEMIs.push({member:l.member,row:{date:l.omDue,emi:l.amount+i,principal:l.amount,interest:i},idx:0,loanId:l.id,isOM:true});}
+  });
+  const te=cachedExpenses.filter(e=>e.entryType!=='income').reduce((a,e)=>a+e.amount,0);
+  const el=document.getElementById('tab-home');
+  el.innerHTML=`<div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:13px;line-height:1.5">ಬಸವೇಶ್ವರ ಕೋ-ಆಪರೇಟಿವ್ ಸೊಸೈಟಿ ಗುಬ್ಬಹಳ್ಳಿ<br><span>EMI due: 10th · 🔴 LIVE</span></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Total Disbursed</div><div class="stat-value cv-gold">${fmt(totalDisbursed)}</div></div>
+    <div class="stat-card"><div class="stat-label">Outstanding</div><div class="stat-value cv-red">${fmt(totalOutP+totalOutI)}</div><div class="stat-sub">P:${fmt(totalOutP)} I:${fmt(totalOutI)}</div></div>
+    <div class="stat-card"><div class="stat-label">Interest Recd</div><div class="stat-value cv-green">${fmt(totalIntRecd)}</div></div>
+    <div class="stat-card"><div class="stat-label">Expenditure</div><div class="stat-value cv-purple">${fmt(te)}</div></div>
+  </div>
+  ${pendingEMIs.length>0?`<div class="sec-hdr"><div class="sec-title" style="color:var(--red)">⚠️ Overdue</div><span class="badge br">${pendingEMIs.length}</span></div>
+  ${pendingEMIs.map(p=>`<div class="pending-emi-card"><div class="card-top">
+    <div style="display:flex;align-items:center;gap:9px">
+      <div style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;background:rgba(224,92,92,.15);color:var(--red)">${initials(p.member)}</div>
+      <div><div class="card-name" style="color:var(--red)">${p.member}</div><div class="card-sub">Due: ${p.row.date}${p.isOM?' · 1-Month':` · EMI #${p.idx+1}`}</div></div>
+    </div>
+    <div style="text-align:right"><div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--red);font-weight:700">${fmt(p.row.emi)}</div>
+    ${isAdmin?`<button class="btn btn-g btn-sm mpb" data-id="${p.loanId}" style="margin-top:4px">✓ Mark Paid</button>`:''}</div>
+  </div>
+  <div class="row"><span>Principal</span><span>${fmt(p.row.principal)}</span></div>
+  <div class="row"><span>Interest</span><span style="color:var(--green)">${fmt(p.row.interest)}</span></div></div>`).join('')}`
+  :`<div style="background:rgba(78,204,163,.07);border:1px solid rgba(78,204,163,.2);border-radius:11px;padding:12px 14px;font-size:12px;color:var(--green);margin-bottom:13px">✅ No overdue payments!</div>`}
+  <div class="sec-hdr"><div class="sec-title">All Loans</div></div>
+  ${cachedLoans.map(l=>{
+    const ob=getLoanOutstanding(l),isOM=l.type==='onemonth';
+    const pend=isOM?(l.status==='paid'?0:1):l.tenure-l.paidEMI;
+    const pct=isOM?(l.status==='paid'?100:0):Math.round(l.paidEMI/l.tenure*100);
+    const badge=l.status==='preclosed'?`<span class="badge bp">PRECLOSED</span>`:l.status==='closed'||l.status==='paid'?`<span class="badge bg">CLEAR</span>`:isOM?`<span class="badge ba">1-MONTH</span>`:pend<=3?`<span class="badge ba">${pend} left</span>`:`<span class="badge br">${pend} left</span>`;
+    return`<div class="card odb" data-id="${l.id}" style="cursor:pointer">
+      <div class="card-top">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;background:${avatarColor(l.member)}22;color:${avatarColor(l.member)}">${initials(l.member)}</div>
+          <div><div class="card-name">${l.member}</div><div class="card-sub">${isOM?`1-Month · ${l.omDue||'—'}`:`${l.tenure}m · EMI ${l.schedule&&l.schedule.length?fmt(l.schedule[0].emi):fmt(calcEMI(l.amount,l.tenure))}`}</div></div>
+        </div>${badge}
+      </div>
+      <div class="row"><span>Outstanding Principal</span><span style="color:${ob.principal>0?'var(--red)':'var(--green)'}">${fmt(ob.principal)}</span></div>
+      <div class="row"><span>Outstanding Interest</span><span style="color:${ob.interest>0?'var(--accent)':'var(--green)'}">${fmt(ob.interest)}</span></div>
+      <div class="row"><span><strong>Total Outstanding</strong></span><span style="color:${ob.total>0?'var(--red)':'var(--green)'}"><strong>${fmt(ob.total)}</strong></span></div>
+      ${!isOM?`<div class="pbar"><div class="pfill" style="width:${pct}%"></div></div><div style="text-align:right;font-size:10px;color:var(--muted);margin-top:3px">${l.paidEMI}/${l.tenure} (${pct}%)</div>`:''}
+    </div>`;
+  }).join('')}`;
+  el.querySelectorAll('.mpb').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();markEMIPaid(btn.dataset.id);}));
+  el.querySelectorAll('.odb').forEach(btn=>btn.addEventListener('click',()=>openDetail(btn.dataset.id)));
+}
+
+async function markEMIPaid(loanId){
+  if(!isAdmin){showToast('Admin only','error');return}
+  const l=cachedLoans.find(x=>x.id===loanId);if(!l)return;
+  const updated=l.type==='onemonth'?{...l,status:'paid'}:{...l,paidEMI:l.paidEMI+1};
+  await fsSet('loans',loanId,updated);
+  const idx=cachedLoans.findIndex(x=>x.id===loanId);
+  if(idx>=0)cachedLoans[idx]=updated;
+  showToast('Marked paid ✓','success');renderCurrentTab();
+}
+
+// ══════ MEMBERS ══════
+function renderMembers(){
+  const el=document.getElementById('tab-members');
+  el.innerHTML=`<div style="background:rgba(${isAdmin?'240,192,64':'78,204,163'},.07);border:1px solid rgba(${isAdmin?'240,192,64':'78,204,163'},.2);border-radius:9px;padding:9px 13px;font-size:11px;color:var(--${isAdmin?'accent':'green'});margin-bottom:12px">${isAdmin?'✏️ Admin · Tap to view/edit':'👁 Tap to view details'}</div>
+  <div class="sec-hdr"><div class="sec-title">All 14 Members</div>${isAdmin?`<button class="btn btn-p btn-sm" id="addLoanBtn">+ Loan</button>`:''}</div>
+  ${ALL_MEMBERS.map(name=>{
+    const loan=cachedLoans.find(l=>l.member===name&&l.status==='active');
+    const ob=loan?getLoanOutstanding(loan):{principal:0,interest:0,total:0};
+    const pend=loan?loan.type==='onemonth'?1:loan.tenure-loan.paidEMI:0;
+    const badge=!loan?`<span class="badge bm">NO LOAN</span>`:pend===0?`<span class="badge bg">✓ CLEAR</span>`:pend<=3?`<span class="badge ba">${pend} left</span>`:`<span class="badge br">${pend} left</span>`;
+    return`<div class="member-list-card mlc" data-name="${name}" data-lid="${loan?loan.id:''}">
+      <div style="width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;background:${avatarColor(name)}22;color:${avatarColor(name)}">${initials(name)}</div>
+      <div style="flex:1;min-width:0"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px">${name}</div>
+      <div style="font-size:10px;color:var(--muted)">${loan?`${loan.type==='onemonth'?'1-Month':loan.tenure+'m'} · ${loan.guarantor||'—'}`:'No active loan'}</div></div>
+      <div style="text-align:right">${loan?`<div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--red)">${fmt(ob.principal)}</div><div style="font-size:10px;color:var(--accent)">+${fmt(ob.interest)} int</div>`:'<div style="color:var(--muted)">—</div>'}<div style="margin-top:3px">${badge}</div></div>
+    </div>`;
+  }).join('')}`;
+  if(isAdmin)document.getElementById('addLoanBtn').addEventListener('click',()=>openLoanModal());
+  el.querySelectorAll('.mlc').forEach(card=>{
+    card.addEventListener('click',()=>{const lid=card.dataset.lid;if(lid)openDetail(lid);else if(isAdmin)openLoanModal(null,card.dataset.name);else showToast('No loan','error');});
+  });
+}
+
+// ══════ COLLECTIONS ══════
+function renderCollections(){
+  const sm=genMonths(CONTRIB_START,SETTLED_UPTO);
+  const tc=sm.reduce((a,m)=>a+getShare(m)*MEMBERS_COUNT,0);
+  let ti=0,tp=0;cachedLoans.forEach(l=>{if(!l.schedule)return;l.schedule.slice(0,l.paidEMI).forEach(r=>{ti+=r.interest;tp+=r.principal;})});
+  const exps=cachedExpenses.filter(e=>e.entryType!=='income'),incs=cachedExpenses.filter(e=>e.entryType==='income');
+  const te=exps.reduce((a,e)=>a+e.amount,0),tInc=incs.reduce((a,e)=>a+e.amount,0);
+  const nb=tc+ti+tp+tInc-te;
+  const allMonths=genMonths(CONTRIB_START,'2026-06');
+  const el=document.getElementById('tab-collect');
+  el.innerHTML=`<div class="big-stat" style="border-color:rgba(240,192,64,.3)">
+    <div class="big-stat-label">Total Contributions</div>
+    <div class="big-stat-value cv-gold">${fmt(tc)}</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:5px">Mar 2025 – Mar 2026 · 14 members</div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Interest Recd</div><div class="stat-value cv-green">${fmt(ti)}</div></div>
+    <div class="stat-card"><div class="stat-label">Other Income</div><div class="stat-value cv-blue">${fmt(tInc)}</div></div>
+    <div class="stat-card"><div class="stat-label">Expenditure</div><div class="stat-value cv-purple">-${fmt(te)}</div></div>
+    <div class="stat-card"><div class="stat-label">Net Balance</div><div class="stat-value" style="color:${nb>=0?'var(--green)':'var(--red)'};font-size:16px">${fmt(nb)}</div></div>
+  </div>
+  <div class="divider"></div>
+  <div class="sec-hdr"><div class="sec-title">💸 Expenditure</div>${isAdmin?`<button class="btn btn-purple btn-sm" id="addExpBtn">+ Add</button>`:''}</div>
+  ${exps.length===0?`<div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;color:var(--muted);font-size:12px;margin-bottom:12px">No expenditure yet</div>`:`
+  <div class="card" style="margin-bottom:12px">${exps.slice().reverse().map(e=>`<div class="exp-row">
+    <div style="flex:1"><div style="font-size:12px;font-weight:500">${e.desc}</div><div style="font-size:10px;color:var(--muted)">${e.date} · ${e.category||''}</div></div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--red)">-${fmt(e.amount)}</div>
+      ${isAdmin?`<button class="btn btn-d btn-sm deb" data-id="${e._id}" style="padding:3px 7px;font-size:10px">✕</button>`:''}
+    </div></div>`).join('')}
+  <div style="display:flex;justify-content:space-between;padding-top:10px;font-size:12px;font-weight:600;border-top:1px solid var(--border);margin-top:4px"><span style="color:var(--muted)">Total</span><span style="font-family:'DM Mono',monospace;color:var(--red)">-${fmt(te)}</span></div></div>`}
+  <div class="sec-hdr"><div class="sec-title">💰 Other Income</div>${isAdmin?`<button class="btn btn-blue btn-sm" id="addIncBtn">+ Add</button>`:''}</div>
+  ${incs.length===0?`<div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;color:var(--muted);font-size:12px;margin-bottom:12px">No other income yet</div>`:`
+  <div class="card" style="margin-bottom:12px">${incs.slice().reverse().map(e=>`<div class="exp-row">
+    <div style="flex:1"><div style="font-size:12px;font-weight:500">${e.desc}</div><div style="font-size:10px;color:var(--muted)">${e.date} · ${e.category||''}</div></div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--green)">+${fmt(e.amount)}</div>
+      ${isAdmin?`<button class="btn btn-d btn-sm deb" data-id="${e._id}" style="padding:3px 7px;font-size:10px">✕</button>`:''}
+    </div></div>`).join('')}
+  <div style="display:flex;justify-content:space-between;padding-top:10px;font-size:12px;font-weight:600;border-top:1px solid var(--border);margin-top:4px"><span style="color:var(--muted)">Total</span><span style="font-family:'DM Mono',monospace;color:var(--green)">+${fmt(tInc)}</span></div></div>`}
+  <div class="divider"></div>
+  <div class="sec-hdr"><div class="sec-title">Month-by-Month</div>${isAdmin?`<button class="btn btn-s btn-sm" id="editShareBtn">✏️ Shares</button>`:''}<span style="font-size:10px;color:var(--muted)">tap to expand</span></div>
+  ${[...allMonths].reverse().map(month=>{
+    const isExp=expandedMonths.has(month),share=getShare(month),totalC=share*MEMBERS_COUNT;
+    const emiRows=[];cachedLoans.forEach(l=>{if(!l.schedule)return;l.schedule.forEach((row,idx)=>{if(rowMonth(row.date)===month)emiRows.push({member:l.member,row,paid:idx<l.paidEMI,idx,loanId:l.id});});});
+    const paidInt=emiRows.filter(r=>r.paid).reduce((a,r)=>a+r.row.interest,0);
+    return`<div class="month-block"><div class="month-header tmh" data-month="${month}">
+      <div><div class="month-name">${settled(month)?'🟢':'🟡'} ${mName(month)}${month==='2026-01'?' ⭐':''}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">₹${share.toLocaleString('en-IN')}/member · ${fmt(totalC)}${settled(month)?` · Int ${fmt(paidInt)}`:''}</div></div>
+      <span style="color:var(--muted);font-size:16px">${isExp?'▾':'▸'}</span>
+    </div>
+    ${isExp?`<div class="month-body">
+      ${ALL_MEMBERS.map(name=>`<div class="mr"><div style="font-size:12px;font-weight:500">${name}</div><div style="font-family:'DM Mono',monospace;font-size:11px;color:${settled(month)?'var(--green)':'var(--muted)'}">+${fmt(share)} ${settled(month)?'✓':''}</div></div>`).join('')}
+      ${emiRows.length>0?`<div style="margin-top:10px;font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;margin-bottom:6px">EMI Payments</div>
+      ${emiRows.map(({member,row,paid,idx,loanId})=>`<div class="mr">
+        <div><div style="font-size:12px;font-weight:500">${member} <span style="font-size:9px;color:var(--muted)">#${idx+1}</span></div>
+        <div style="font-size:10px;color:var(--muted)">P:${row.principal.toLocaleString('en-IN')} + I:${row.interest.toLocaleString('en-IN')}</div></div>
+        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+          <div style="font-family:'DM Mono',monospace;font-size:12px;color:${paid?'var(--green)':settled(month)?'var(--red)':'var(--muted)'}">${fmt(row.emi)}</div>
+          ${paid?`<span style="color:var(--green);font-size:10px">✓ PAID</span>`:settled(month)&&isAdmin?`<button class="btn btn-g btn-sm mpb" data-id="${loanId}" style="font-size:10px;padding:3px 8px">✓ Paid</button>`:`<span style="font-size:10px;color:${settled(month)?'var(--red)':'var(--muted)'}">${settled(month)?'OVERDUE':'pending'}</span>`}
+        </div></div>`).join('')}`:''}
+    </div>`:''}
+    </div>`;
+  }).join('')}`;
+  if(isAdmin){
+    document.getElementById('addExpBtn')&&document.getElementById('addExpBtn').addEventListener('click',()=>openExpModal('expense'));
+    document.getElementById('addIncBtn')&&document.getElementById('addIncBtn').addEventListener('click',()=>openExpModal('income'));
+    document.getElementById('editShareBtn')&&document.getElementById('editShareBtn').addEventListener('click',openShareModal);
+    el.querySelectorAll('.deb').forEach(btn=>btn.addEventListener('click',async()=>{
+      if(!confirm('Delete?'))return;
+      await fsDelete('expenses',btn.dataset.id);
+      cachedExpenses=cachedExpenses.filter(e=>e._id!==btn.dataset.id);
+      showToast('Deleted','success');renderCollections();
+    }));
+    el.querySelectorAll('.mpb').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();markEMIPaid(btn.dataset.id);}));
+  }
+  el.querySelectorAll('.tmh').forEach(h=>h.addEventListener('click',()=>{
+    const m=h.dataset.month;expandedMonths.has(m)?expandedMonths.delete(m):expandedMonths.add(m);renderCollections();
+  }));
+}
+
+// ══════ SHARE MODAL ══════
+function openShareModal(){
+  const months=genMonths(CONTRIB_START,'2027-12');
+  document.getElementById('shareEditList').innerHTML=months.map(m=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
+    <div style="font-size:12px">${mName(m)}</div>
+    <input type="number" class="inp si" data-month="${m}" value="${getShare(m)}" style="width:100px;padding:6px 10px;font-size:13px;text-align:right"></div>`).join('');
+  document.getElementById('shareModal').classList.add('open');
+}
+document.getElementById('saveShareBtn').addEventListener('click',async()=>{
+  document.querySelectorAll('.si').forEach(inp=>{const v=parseInt(inp.value);if(v>0)monthlyShares[inp.dataset.month]=v;});
+  await saveConfig();showToast('Updated ✓','success');closeModal('shareModal');renderCurrentTab();
+});
+document.getElementById('closeShareBtn').addEventListener('click',()=>closeModal('shareModal'));
+
+// ══════ DETAIL ══════
+function openDetail(loanId){
+  const l=cachedLoans.find(x=>x.id===loanId);if(!l)return;
+  const ob=getLoanOutstanding(l),isOM=l.type==='onemonth';
+  const totalInt=l.schedule?l.schedule.reduce((a,r)=>a+r.interest,0):0;
+  const el=document.getElementById('detailModalContent');
+  el.innerHTML=`<div class="modal-handle"></div>
+  <div style="display:flex;align-items:center;gap:11px;margin-bottom:18px">
+    <div style="width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;background:${avatarColor(l.member)}22;color:${avatarColor(l.member)}">${initials(l.member)}</div>
+    <div><div class="modal-title" style="margin-bottom:2px">${l.member}</div><div style="font-size:11px;color:var(--muted)">Guarantor: ${l.guarantor||'—'}${l.disbDate?' · '+l.disbDate:''}</div></div>
+  </div>
+  <div class="detail-section"><div class="detail-section-title">Loan Summary</div>
+    <div class="row"><span>Type</span><span>${isOM?'One Month':'Regular · '+l.tenure+' months'}</span></div>
+    <div class="row"><span>Amount</span><span>${fmt(l.amount)}</span></div>
+    ${isOM?`<div class="row"><span>Rate</span><span>${l.omRate||1}%/month</span></div><div class="row"><span>Due</span><span>${l.omDue||'—'}</span></div>`
+    :`<div class="row"><span>EMI</span><span>${l.schedule&&l.schedule.length?fmt(l.schedule[0].emi):fmt(calcEMI(l.amount,l.tenure))}</span></div><div class="row"><span>Total Interest</span><span>${fmt(totalInt)}</span></div>`}
+    <div class="row"><span>Status</span><span class="badge ${l.status==='preclosed'?'bp':l.status==='closed'||l.status==='paid'?'bg':'br'}">${(l.status||'active').toUpperCase()}</span></div>
+    ${l.status==='preclosed'?`<div class="row"><span>Pre-close Date</span><span>${l.precloseDate||'—'}</span></div><div class="row"><span>Amount Paid</span><span style="color:var(--green)">${fmt(l.precloseAmt||0)}</span></div><div class="row"><span>Interest Waived</span><span style="color:var(--purple)">${fmt(l.precloseWaived||0)}</span></div>`:''}
+  </div>
+  ${!isOM&&l.status==='active'?`<div class="detail-section"><div class="detail-section-title">Outstanding</div>
+    <div class="row"><span>Principal</span><span style="color:var(--red)">${fmt(ob.principal)}</span></div>
+    <div class="row"><span>Interest</span><span style="color:var(--accent)">${fmt(ob.interest)}</span></div>
+    <div class="row"><span><strong>Total</strong></span><span style="color:var(--red);font-weight:700">${fmt(ob.total)}</span></div>
+    <div class="pbar"><div class="pfill" style="width:${Math.round(l.paidEMI/l.tenure*100)}%"></div></div>
+    <div style="text-align:right;font-size:10px;color:var(--muted);margin-top:3px">${l.paidEMI}/${l.tenure} paid</div>
+  </div>`:''}
+  ${l.schedule&&!isOM?`<div class="detail-section"><div class="detail-section-title">EMI Schedule</div>
+    <div style="overflow-x:auto"><table class="emi-table"><thead><tr><th>Date</th><th>Principal</th><th>Interest</th><th>EMI</th><th>Balance</th></tr></thead>
+    <tbody>${l.schedule.map((r,i)=>{const isPaid=i<l.paidEMI,isOD=!isPaid&&rowMonth(r.date)<=SETTLED_UPTO;return`<tr class="${isPaid?'paid':isOD?'overdue':''}"><td>${i+1}. ${r.date}${isOD?' ⚠️':''}</td><td>${r.principal.toLocaleString('en-IN')}</td><td>${r.interest.toLocaleString('en-IN')}</td><td>${r.emi.toLocaleString('en-IN')}</td><td>${r.balance.toLocaleString('en-IN')}</td></tr>`;}).join('')}</tbody></table></div></div>`:''}
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    ${isAdmin?`<button class="btn btn-p btn-sm" id="elb">✏️ Edit</button>
+    ${!isOM&&l.status==='active'?`<button class="btn btn-g btn-sm" id="neb">✓ Next EMI</button>`:''}
+    ${isOM&&l.status==='active'?`<button class="btn btn-g btn-sm" id="mob">✓ Mark Paid</button>`:''}
+    <button class="btn btn-d btn-sm" id="dlb">🗑 Delete</button>`:''}
+    <button class="btn btn-s btn-sm" id="cdb">Close</button>
+  </div>`;
+  document.getElementById('detailModal').classList.add('open');
+  document.getElementById('cdb').addEventListener('click',()=>closeModal('detailModal'));
+  if(isAdmin){
+    document.getElementById('elb').addEventListener('click',()=>{closeModal('detailModal');openLoanModal(l.id);});
+    document.getElementById('neb')&&document.getElementById('neb').addEventListener('click',()=>{markEMIPaid(l.id);closeModal('detailModal');});
+    document.getElementById('mob')&&document.getElementById('mob').addEventListener('click',()=>{markEMIPaid(l.id);closeModal('detailModal');});
+    document.getElementById('dlb').addEventListener('click',async()=>{
+      if(!confirm('Delete?'))return;
+      await fsDelete('loans',l.id);
+      cachedLoans=cachedLoans.filter(x=>x.id!==l.id);
+      showToast('Deleted','success');closeModal('detailModal');renderCurrentTab();
+    });
+  }
+}
+
+// ══════ LOAN MODAL ══════
+function openLoanModal(id=null,presetMember=null){
+  editingLoanId=id;
+  document.getElementById('loanModalTitle').textContent=id?'Edit Loan':'Add Loan';
+  const sel=document.getElementById('lMember');
+  sel.innerHTML=ALL_MEMBERS.map(m=>`<option value="${m}">${m}</option>`).join('');
+  document.getElementById('lTenure').innerHTML=Array.from({length:60},(_,i)=>`<option value="${i+1}">${i+1} month${i>0?'s':''}</option>`).join('');
+  document.getElementById('lType').value='regular';toggleLoanType();
+  if(id){
+    const l=cachedLoans.find(x=>x.id===id);
+    if(l){sel.value=l.member;document.getElementById('lType').value=l.type||'regular';document.getElementById('lAmount').value=l.amount;document.getElementById('lGuarantor').value=l.guarantor||'';document.getElementById('lDisbDate').value=l.disbDate||'';
+    if(l.type==='onemonth'){document.getElementById('lOMRate').value=l.omRate||1;document.getElementById('lOMDue').value=l.omDue||'';document.getElementById('lOMStatus').value=l.status||'active';}
+    else{document.getElementById('lTenure').value=l.tenure;document.getElementById('lPaid').value=l.paidEMI;document.getElementById('lStatus').value=l.status||'active';
+    if(l.status==='preclosed'){document.getElementById('precloseFields').style.display='block';document.getElementById('lPrecloseDate').value=l.precloseDate||'';document.getElementById('lPrecloseAmt').value=l.precloseAmt||'';document.getElementById('lPrecloseWaived').value=l.precloseWaived||0;}
+    updateEMICalc();}toggleLoanType();}
+  }else{
+    if(presetMember)sel.value=presetMember;
+    ['lAmount','lGuarantor','lDisbDate','lPrecloseDate','lPrecloseAmt'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('lPaid').value=0;document.getElementById('lPrecloseWaived').value=0;document.getElementById('emiCalc').textContent='—';document.getElementById('lStatus').value='active';document.getElementById('precloseFields').style.display='none';
+  }
+  document.getElementById('loanModal').classList.add('open');
+}
+function toggleLoanType(){const t=document.getElementById('lType').value;document.getElementById('regularFields').style.display=t==='regular'?'block':'none';document.getElementById('regularExtra').style.display=t==='regular'?'block':'none';document.getElementById('oneMonthExtra').style.display=t==='onemonth'?'block':'none';}
+document.getElementById('lType').addEventListener('change',toggleLoanType);
+document.getElementById('lStatus').addEventListener('change',function(){document.getElementById('precloseFields').style.display=this.value==='preclosed'?'block':'none';});
+function updateEMICalc(){const a=parseFloat(document.getElementById('lAmount').value)||0,t=parseInt(document.getElementById('lTenure').value)||12;document.getElementById('emiCalc').textContent=a>0?fmt(calcEMI(a,t))+'/mo':'—'}
+document.getElementById('lAmount').addEventListener('input',updateEMICalc);
+document.getElementById('lTenure').addEventListener('change',updateEMICalc);
+document.getElementById('saveLoanBtn').addEventListener('click',async()=>{
+  const member=document.getElementById('lMember').value,amount=parseFloat(document.getElementById('lAmount').value);
+  const guarantor=document.getElementById('lGuarantor').value,disbDate=document.getElementById('lDisbDate').value;
+  const ltype=document.getElementById('lType').value;
+  if(!member||!amount||amount<100){showToast('Check inputs','error');return}
+  const id=editingLoanId||'l'+Date.now();
+  const existing=editingLoanId?cachedLoans.find(l=>l.id===editingLoanId):null;
+  let obj;
+  if(ltype==='onemonth'){obj={id,member,guarantor,amount,disbDate,type:'onemonth',omRate:parseFloat(document.getElementById('lOMRate').value)||1,omDue:document.getElementById('lOMDue').value,status:document.getElementById('lOMStatus').value};}
+  else{const tenure=parseInt(document.getElementById('lTenure').value),paidEMI=parseInt(document.getElementById('lPaid').value)||0,status=document.getElementById('lStatus').value;
+  obj={id,member,guarantor,amount,tenure,disbDate,paidEMI,type:'regular',status,schedule:existing?.schedule||[]};
+  if(status==='preclosed'){obj.precloseDate=document.getElementById('lPrecloseDate').value;obj.precloseAmt=parseFloat(document.getElementById('lPrecloseAmt').value)||0;obj.precloseWaived=parseFloat(document.getElementById('lPrecloseWaived').value)||0;}}
+  await fsSet('loans',id,obj);
+  const idx=cachedLoans.findIndex(l=>l.id===id);if(idx>=0)cachedLoans[idx]=obj;else cachedLoans.push(obj);
+  showToast('Saved ✓','success');closeModal('loanModal');renderCurrentTab();
+});
+document.getElementById('closeLoanBtn').addEventListener('click',()=>closeModal('loanModal'));
+
+// ══════ EXPENSE MODAL ══════
+function openExpModal(type='expense'){
+  expEntryType=type;
+  document.getElementById('expModalTitle').textContent=type==='expense'?'Add Expenditure':'Add Other Income';
+  document.getElementById('expTypeExpBtn').className='btn btn-sm '+(type==='expense'?'btn-p':'btn-s');
+  document.getElementById('expTypeIncBtn').className='btn btn-sm '+(type==='income'?'btn-p':'btn-s');
+  document.getElementById('expCatWrap').style.display=type==='expense'?'block':'none';
+  document.getElementById('incCatWrap').style.display=type==='income'?'block':'none';
+  ['expDate','expDesc','expNote'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('expAmt').value='';
+  document.getElementById('expModal').classList.add('open');
+}
+document.getElementById('expTypeExpBtn').addEventListener('click',()=>openExpModal('expense'));
+document.getElementById('expTypeIncBtn').addEventListener('click',()=>openExpModal('income'));
+document.getElementById('saveExpBtn').addEventListener('click',async()=>{
+  const date=document.getElementById('expDate').value.trim(),desc=document.getElementById('expDesc').value.trim();
+  const amount=parseFloat(document.getElementById('expAmt').value),note=document.getElementById('expNote').value.trim();
+  const category=expEntryType==='expense'?document.getElementById('expCat').value:document.getElementById('incCat').value;
+  if(!date||!desc||!amount||amount<=0){showToast('Fill all fields','error');return}
+  const data={date,desc,amount,category,note,entryType:expEntryType};
+  await fsAdd('expenses',data);
+  cachedExpenses.push({...data,_id:'e'+Date.now()});
+  showToast('Saved ✓','success');closeModal('expModal');renderCollections();
+});
+document.getElementById('closeExpBtn').addEventListener('click',()=>closeModal('expModal'));
+
+// ══════ SETTINGS ══════
+function renderSettings(){
+  document.getElementById('tab-settings').innerHTML=`<div class="sec-title" style="margin-bottom:14px">⚙️ Settings</div>
+  ${isAdmin?`<div class="card" style="margin-bottom:10px">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px">💰 Max Loan Amount</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:9px">Current: <strong style="color:var(--accent)">${fmt(maxLoanAmount)}</strong></div>
+    <div style="display:flex;gap:8px"><input type="number" id="mli" class="inp" value="${maxLoanAmount}" style="flex:1"><button class="btn btn-p btn-sm" id="smlb">Save</button></div>
+  </div>
+  <div class="card" style="margin-bottom:10px">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:7px">📅 Monthly Share Amounts</div>
+    <button class="btn btn-p btn-sm" id="ssb">✏️ Edit Shares</button>
+  </div>
+  <div class="card" style="margin-bottom:10px">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:7px">🔐 Admin PIN</div>
+    <button class="btn btn-s btn-sm" id="cpb">Change PIN</button>
+  </div>`:''}
+  <div class="card"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:7px">ℹ️ App Info</div>
+  <div style="font-size:11px;color:var(--muted);line-height:1.9">ChitFund Live v7.1 · Firebase REST<br>14 Members · Real-time sync every 15s<br>Data stored permanently in Firebase<br>Max Loan: ${fmt(maxLoanAmount)}<br>Logged in: <strong style="color:var(--text)">${currentUser}</strong> · ${isAdmin?'<span style="color:var(--accent)">Admin</span>':'View Only'}</div></div>`;
+  if(isAdmin){
+    document.getElementById('smlb').addEventListener('click',async()=>{const v=parseInt(document.getElementById('mli').value);if(!v||v<1000){showToast('Enter valid amount','error');return}maxLoanAmount=v;await saveConfig();showToast('Updated ✓','success');renderSettings();});
+    document.getElementById('ssb').addEventListener('click',openShareModal);
+    document.getElementById('cpb').addEventListener('click',()=>document.getElementById('pinModal').classList.add('open'));
+  }
+}
+document.getElementById('savePinBtn').addEventListener('click',async()=>{
+  const old=document.getElementById('pinOld').value,nw=document.getElementById('pinNew').value,cf=document.getElementById('pinConf').value;
+  if(old!==adminPin){showToast('Wrong PIN','error');return}if(nw.length<4){showToast('Min 4 digits','error');return}if(nw!==cf){showToast('PINs do not match','error');return}
+  adminPin=nw;await saveConfig();showToast('PIN updated ✓','success');closeModal('pinModal');
+  ['pinOld','pinNew','pinConf'].forEach(i=>document.getElementById(i).value='');
+});
+document.getElementById('closePinBtn').addEventListener('click',()=>closeModal('pinModal'));
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+</script>
+</body>
+</html>
